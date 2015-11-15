@@ -181,3 +181,16 @@
 2015/11/15 14:46:36 [trace] [system.CModule] Loading "db" application component
 2015/11/15 14:46:36 [trace] [system.db.CDbConnection] Opening DB connection
 2015/11/15 14:46:36 [trace] [system.web.filters.CFilterChain] Running filter SystemController.filteractionLog()
+2015/11/15 14:56:57 [trace] [system.CModule] Loading "session" application component
+2015/11/15 14:56:57 [trace] [system.CModule] Loading "log" application component
+2015/11/15 14:56:57 [trace] [system.CModule] Loading "request" application component
+2015/11/15 14:56:57 [trace] [system.CModule] Loading "urlManager" application component
+2015/11/15 14:56:57 [trace] [system.CModule] Loading "cache" application component
+2015/11/15 14:56:57 [trace] [system.db.CDbConnection] Opening DB connection
+2015/11/15 14:56:57 [trace] [system.db.CDbCommand] Executing SQL: DELETE FROM YiiCache WHERE expire>0 AND expire<1447595817
+2015/11/15 14:56:57 [trace] [system.db.CDbCommand] Querying SQL: SELECT value FROM YiiCache WHERE id='4bbc9b23b3c5167eee046ce9e0c2fcd1' AND (expire=0 OR expire>1447595817)
+2015/11/15 14:56:57 [trace] [system.caching.CDbCache] Serving "Yii.CUrlManager.rules" from cache
+2015/11/15 14:56:57 [trace] [system.web.filters.CFilterChain] Running filter SystemController.filterauth()
+2015/11/15 14:56:57 [trace] [system.CModule] Loading "db" application component
+2015/11/15 14:56:57 [trace] [system.db.CDbConnection] Opening DB connection
+2015/11/15 14:56:58 [trace] [system.web.filters.CFilterChain] Running filter SystemController.filteractionLog()
