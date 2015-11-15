@@ -1,0 +1,52 @@
+<div class="main-box">
+    {if $this->id eq "stream" or $this->id eq "stat" }
+    <div class="menu-section">
+        <div class="menu-title">数据流</div>
+        <div class="menu-item" id="tree">这是一颗树</div>
+        <button id="new_root">新建节点</button>
+    </div>
+
+    {/if}
+
+    {if $this->id eq "process"}
+    <div class="menu-section">
+        <div class="menu-title">数据处理&amp;监控</div>
+        <div class="menu-item"><a {if $this->route eq 'process/query'}class="active" {/if}href="/process/query">查看</a></div>
+    </div>
+    {/if}
+
+    {if $this->id eq "dispatchCenter" or $this->id eq "hadoop" or $this->id eq "tag" or $this->id eq "hadoop" or $this->id eq "soapAcl" or $this->id eq "moduleMap" or $this->id eq "processMachine" or $this->id eq "wwwDictNode" or $this->id eq "distributePool" or $this->id eq "noahKeyPool"}
+    <div class="menu-section">
+        <div class="menu-title">系统管理</div>
+        <div class="menu-item"><a {if $this->route eq 'dispatchCenter/list'}class="active" {/if}href="/dispatchCenter/list">任务调度中心管理</a></div>
+        <div class="menu-item"><a {if $this->route eq 'hadoop/list'}class="active" {/if}href="/hadoop/list">Hadoop管理</a></div>
+        <div class="menu-item"><a {if $this->route eq 'soapAcl/list'}class="active" {/if}href="/soapAcl/list">Soap访问控制管理</a></div>
+        <div class="menu-item"><a {if $this->route eq 'moduleMap/list'}class="active" {/if}href="/moduleMap/list">模块映射管理</a></div>
+        <div class="menu-item"><a {if $this->route eq 'processMachine/list'}class="active" {/if}href="/processMachine/list">Process机器管理</a></div>
+        <div class="menu-item"><a {if $this->route eq 'wwwDictNode/list'}class="active" {/if}href="/wwwDictNode/list">WWW词典节点管理</a></div>
+        <div class="menu-item"><a {if $this->route eq 'distributePool/list' or $this->route eq 'noahKeyPool/list'}class="active" {/if}href="/distributePool/list">Noah配送池管理</a></div>
+    </div>
+    {/if}
+
+    {if $this->id eq "change"}
+    <div class="menu-section">
+        <div class="menu-title">工作流</div>
+        <div class="menu-item"><a {if $this->route eq 'change/list' and $this->actionParams.show neq 'all'}class="active" {/if}href="/change/list">我的当前修改</a></div>
+        <div class="menu-item"><a {if $this->route eq 'change/misprocesslist' and  $this->actionParams.type eq 'initiated' and $this->actionParams.show neq 'all'}class="active" {/if}href="/change/misprocesslist?type=initiated">我的当前操作单</a></div>
+        <div class="menu-item"><a {if $this->route eq 'change/misprocesslist' and $this->actionParams.type eq 'finished' and $this->actionParams.show neq 'all'}class="active" {/if}href="/change/misprocesslist?type=finished">我的结束操作单</a></div>
+        <div class="menu-item"><a {if $this->route eq 'change/list' and $this->actionParams.show eq 'all'}class="active" {/if}href="/change/list/show/all">所有当前修改</a></div>
+        <div class="menu-item"><a {if $this->route eq 'change/misprocesslist' and $this->actionParams.type eq 'initiated' and $this->actionParams.show eq 'all'}class="active" {/if}href="/change/misprocesslist?type=initiated&show=all">所有操作单</a></div>
+        <div class="menu-item"><a {if $this->route eq 'change/misprocesslist' and $this->actionParams.type eq 'finished' and $this->actionParams.show eq 'all'}class="active" {/if}href="/change/misprocesslist?type=finished&show=all">所有结束操作单</a></div>
+    </div>
+    {/if}
+    
+    {if $this->id eq "privilage"}
+    <div class="menu-section">
+        <div class="menu-title">权限</div>
+        <div class="menu-item"><a {if $this->route eq 'privilage/privApplyPage'}class="active" {/if}href="/privilage/privApplyPage">数据权限</a></div>
+        <div class="menu-item"><a {if $this->route eq 'privilage/adminApplyPage'}class="active" {/if}href="/privilage/adminApplyPage">申请成为管理员</a></div>
+    </div>
+    {/if}
+
+
+</div>

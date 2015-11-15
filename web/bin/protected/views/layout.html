@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{block name="title"}{/block} 百度时效性运营平台 </title>
+    <link rel="icon" type="image/png" href="/image/superman.png" />
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link id="switch_style" href="/css/bootstrapSwitch.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/base.css" rel="stylesheet">
+
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Favicons -->
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    {block name="style"}{/block}
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.message.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script id="switch_scrpit" src="/js/bootstrapSwitch.js"></script> 
+    {block name="script"}{/block}
+
+    {include file="browser.html"}
+</head>
+
+<body>
+    <div class="header" style="background-color:#fff;margin:-1px auto;border-bottom:solid 1px #ddd;box-shadow:0 0 1px #eee;position:fixed;width:100%;z-index:1000;">
+        {block name="head"} {include file="head.html"} {/block}
+    </div>
+    <main style="background-color:#f9f9f9;padding-top:50px;">
+        <div  style="padding:0;background-color:#fff;width:95%;margin:-1px auto;border:solid 1px #ddd;box-shadow:0 0 1px #eee;padding:20px;">
+            {block name="main"}{/block}
+        </div>
+        <br style="clear:both;" />
+    </main>
+<footer style="padding:20px;" align="center">
+    ©2014 Baidu.com All right reserved.
+</footer>
+
+</body>
+
+</html>

@@ -1,0 +1,40 @@
+.p1 {
+	FONT-SIZE: 14px; LINE-HEIGHT: 24px; FONT-FAMILY: "ËÎÌו"
+}
+TD {
+	FONT-SIZE: 14px; LINE-HEIGHT: 24px; FONT-FAMILY: "ËÎÌו"
+}
+.p2 {
+	FONT-SIZE: 14px; COLOR: #333333; LINE-HEIGHT: 24px
+}
+.p3 {
+	FONT-SIZE: 14px; COLOR: #0033cc; LINE-HEIGHT: 24px
+}
+.p4 {
+	FONT-SIZE: 14px; COLOR: #0033cc; LINE-HEIGHT: 24px
+}
+.padd10 {
+	PADDING-LEFT: 10px
+}
+.f12 {
+	FONT-SIZE: 13px; LINE-HEIGHT: 20px
+}
+.i img { border:1px #999999 solid; padding:3px;}
+h1 { font-size:14px; color:#FF6600}
+h1 a {color:#FF6600}
+h2 { font-size:14px; color:#FF0000}
+h3{ font-size:18px;}
+p { font-weight:normal; font-size:12px;}
+a { text-decoration:none;}
+
+.help-top {
+	background-color:#e5ecf9;
+	height:20px;
+	margin:20px 5px 15px 20px;
+}
+
+.help-main {
+	margin:20px 5px 15px 20px;
+}
+
+

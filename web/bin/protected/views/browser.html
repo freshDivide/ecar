@@ -1,0 +1,34 @@
+<script type="text/javascript">
+{literal}
+var SslIsFirefox = window.navigator.userAgent.indexOf("Firefox");
+if(SslIsFirefox===-1){
+	var SslIsChrome = window.navigator.userAgent.indexOf("Chrome");
+	if(SslIsChrome!==-1){
+	//安全组判断浏览器是否为chrome>25
+		var SslUseragent = navigator.userAgent.toLowerCase();
+		SslVersion = SslUseragent.match(/chrome\/([\d.]+)/)[1];
+		SslVersionNum = SslVersion.match(/\d+/g)[0];
+		if(SslVersionNum>=25){
+		}
+		else{
+		alert("请使用版本大于25的chrome浏览器或版本大于19的firefox浏览器登陆mis系统，谢谢！");
+		window.location.href="http://wiki.babel.baidu.com/twiki/bin/view/Ps/Searcher/ServiceAuxiliaryTopic/Ps_mis_browser";
+		}
+	}else{
+		alert("请使用版本大于25的chrome浏览器或版本大于19的firefox浏览器登陆mis系统，谢谢！");
+		window.location.href="http://wiki.babel.baidu.com/twiki/bin/view/Ps/Searcher/ServiceAuxiliaryTopic/Ps_mis_browser";
+	}
+}else{
+	//安全组判断浏览器是否为firefox>19
+	var FirefoxUseragent = navigator.userAgent.toLowerCase();
+	FirefoxVersion = FirefoxUseragent.match(/firefox\/([\d.]+)/)[1];
+	FirefoxVersionNum = FirefoxVersion.match(/\d+/g)[0];
+	if(FirefoxVersionNum>=19){
+	}
+	else{
+	alert("请使用版本大于25的chrome浏览器或版本大于19的firefox浏览器登陆mis系统，谢谢！");
+	window.location.href="http://wiki.babel.baidu.com/twiki/bin/view/Ps/Searcher/ServiceAuxiliaryTopic/Ps_mis_browser";
+	}
+}
+{/literal}
+</script>

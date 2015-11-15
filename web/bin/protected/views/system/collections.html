@@ -1,0 +1,73 @@
+{extends "layout.html"}
+{block name="title"}{/block}
+{block name=style}
+<style type="text/css">
+#resources_table a{ margin: 5px;}
+</style>
+{/block}
+
+{block name=main}
+<div class="main-box">
+    <table class="table table-responsive table-hover table-striped">
+        <thead>
+            <tr>
+              <th>资源名</th>
+              <th>模板名</th>
+              <th>创建时间</th>
+              <th>创建人</th>
+              <th>资源状态</th>
+              <th>操作</th> 
+            </tr>
+        </thead>
+        <tbody id="resources_table" style="font-size:12px;">
+
+        </tbody>
+    </table>
+    <ul class="pagination  pagination-sm">
+      <li class="disabled"><a href="#">&laquo;</a></li>
+      <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+    </ul>
+
+</div>
+<script type="text/javascript">
+loadResources();
+function loadResources(){
+   $.get("/collection/GetCollectoins", function(result){
+        try{
+            var resources = JSON.parse(result);
+            for (var i = resources.length - 1; i >= 0; i--) {
+                var tr_html = '<tr>';
+                tr_html += '<td>' + resources[i].alaNameDisp + '</td>';
+                tr_html += '<td>' + resources[i].tplName + '</td>';
+                tr_html += '<td>' + resources[i].created + '</td>';
+                tr_html += '<td>' + resources[i].createUser + '</td>';
+                if (resources[i].status === 'new'){
+                     tr_html += '<td><span class="label label-primary">' + resources[i].status +'</span></td>';
+                }else if(resources[i].status === 'online'){
+                    tr_html += '<td><span class="label label-success">' + resources[i].status +'</span></td>';
+                }else if(resources[i].status === 'offline'){
+                    tr_html += '<td><span class="label label-default">' + resources[i].status +'</span></td>';
+                }else{
+                    tr_html += '<td><span class="label label-warning">' + resources[i].status +'</span></td>';
+                }
+                tr_html += '<td>'
+                tr_html += '<a href="#">取消收藏</a>';
+                tr_html += '<a href="#">修改</a>';
+                tr_html += '<a href="#">推送</a>';
+                tr_html += '<a href="#">删除</a>';
+                tr_html += '</td>'; 
+                tr_html += '</tr>';
+                
+                $('#resources_table').append(tr_html);
+            };
+
+        }catch(e){
+            alert("获取资源列表失败" + e.message);
+        }
+
+      }); 
+}
+    
+</script>
+{/block}
+

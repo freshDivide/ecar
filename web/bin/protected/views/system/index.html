@@ -1,0 +1,124 @@
+{extends "layout.html"}
+{block name="title"}{/block}
+{block name=style}
+<style type="text/css">
+<!--{literal}-->
+h1,h2,h3,h4,h5{font-weight: bold;}
+   <!--{/literal}-->
+</style>
+{/block}
+
+{block name=main}
+<div class="main-box">
+    <div style="border-bottom:solid 1px #eee;" align="center">
+        <h3>系统概况</h3>
+    </div>
+    <div style="padding:20px;" class="row-fluid" style="font-weight:bold;">
+        
+        <div class="col-md-5" style="border:solid 1px #ddd;border-radius:5px;padding:20px ;margin:10px;">
+            <h4>中文PC</h4>
+            <div style="padding:10px 0;font-weight:bold;">
+                <div>资源卡：</div>
+                <span>百度：</span><span id="cn_pc_baidu_resouce_sum_count">0</span>
+                <span>合作方：</span><span id="cn_pc_partner_resouce_sum_count">0</span>
+                <div>模板：</div>
+                <span>数量：</span><span id="cn_pc_template_sum_count">0</span>
+            </div>
+        </div>
+        <div class="col-md-5"  style="border:solid 1px #ddd;border-radius:5px;padding:20px;margin:10px;">
+            <h4>Global PC</h4>
+            <div style="padding:10px 0;font-weight:bold;">
+                <div>Card：</div>
+                <span>Baidu：</span><span id="cn_pc_baidu_resouce_sum_count">0</span>
+                <span>Partner:</span><span id="cn_pc_partner_resouce_sum_count">0</span>
+                <div>Template:</div>
+                <span>number：</span><span id="global_pc_template_sum_count">0</span>
+            </div>
+        </div>
+        <div class="col-md-5"  style="border:solid 1px #ddd;border-radius:5px;padding:20px;margin:10px;">
+            <h4>中文Wise</h4>
+            <div style="padding:10px 0;font-weight:bold;">
+                <div>资源卡：</div>
+                <span>内部：</span><span id="cn_wise_baidu_resouce_sum_count">0</span>
+                <span>合作方:</span><span id="cn_wise_partner_resouce_sum_count">0</span>
+                <div>模板：</div>
+                <span>数量：</span><span id="cn_wise_template_sum_count">0</span>
+            </div>
+        </div>
+        <br style="clear:both;" />
+    </div>
+
+
+</div>
+<script type="text/javascript">
+loadData();
+function loadData(){
+    //获取内部资源数量
+    $.get("/resource/GetResources?page_num=1&resource_from=0", function(result){
+        try{
+            var baidu_sum_count = JSON.parse(result).sum_count;
+            $('#cn_pc_baidu_resouce_sum_count').html(baidu_sum_count);
+            
+        }catch(e){
+            alert("获取资源列表失败" + e.message);
+        }
+
+      }); 
+    //获取合作方资源数量
+    $.get("/partner/GetResources?page_num=1&resource_from=1", function(result){
+        try{
+            var partner_sum_count = JSON.parse(result).sum_count;
+            $('#cn_pc_partner_resouce_sum_count').html(partner_sum_count);
+            
+        }catch(e){
+            alert("获取资源列表失败" + e.message);
+        }
+
+      });
+
+
+    //获取中文pc模板数量
+    $.get("/template/GetTemplates?is_wise=0&is_global=0&page_num=1", function(result){
+        try{
+            var template_sum_count = JSON.parse(result).sum_count;
+            $('#cn_pc_template_sum_count').html(template_sum_count);
+        }catch(e){
+            alert("获取模板列表失败" + e.message);
+        }
+
+      });
+      //获取中文WISE模板数量
+    $.get("/template/GetTemplates?is_wise=1&is_global=0&page_num=1", function(result){
+        try{
+            var template_sum_count = JSON.parse(result).sum_count;
+            $('#cn_wise_template_sum_count').html(template_sum_count);
+        }catch(e){
+            alert("获取模板列表失败" + e.message);
+        }
+
+      }); 
+    //获取中文WISE模板数量
+    $.get("/template/GetTemplates?is_wise=0&is_global=1&page_num=1", function(result){
+        try{
+            var template_sum_count = JSON.parse(result).sum_count;
+            $('#global_pc_template_sum_count').html(template_sum_count);
+        }catch(e){
+            alert("获取模板列表失败" + e.message);
+        }
+
+      }); 
+    //获取中文WISE模板数量
+    $.get("/template/GetTemplates?is_wise=1&is_global=1&page_num=1", function(result){
+        try{
+            var template_sum_count = JSON.parse(result).sum_count;
+            $('#global_wise_template_sum_count').html(template_sum_count);
+        }catch(e){
+            alert("获取模板列表失败" + e.message);
+        }
+
+      }); 
+}
+    
+</script>
+{/block}
+

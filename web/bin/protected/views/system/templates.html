@@ -1,0 +1,491 @@
+{extends "layout.html"}
+{block name="title"}{/block}
+{block name=style}
+<style type="text/css">
+#templates_table a{ margin: 5px;}
+</style>
+{/block}
+
+{block name=main}
+<div class="main-box">
+    <div  class="alert alert-success" role="alert">
+        当前位置:模板管理 <i class="glyphicon glyphicon-info-sign"></i> 新增模板请点击<a href="#" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addModal">添加模板</a>
+        <span class="input-group" style="float:right;width:200px;margin-right:10%;">
+          <input type="text" class="form-control" id="keyword" placeholder="输入模板名搜索">
+          <span class="input-group-btn">
+            <button class="btn btn-default search" type="button"> <i class="fa fa-search"></i> </button>
+          </span>
+        </span><!-- /input-group -->
+    </div>
+    <div style="border:solid 1px #ddd;">
+      <table class="table table-responsive table-hover table-striped">
+          <thead>
+              <tr>
+                <th>模板名</th>
+                <th>英文名</th>
+                <th>位置</th>
+                <th>类目ID</th>
+                <th>分组</th>
+                <th>操作</th>
+                <th>开关</th>  
+              </tr>
+          </thead>
+          <tbody id="templates_table" style="font-size:12px;">
+
+          </tbody>
+      </table>
+    </div>
+    <ul class="pagination  pagination-sm">
+      <li> <a href="#" class="first-page" >首页</a></li>
+      <li><a href="#" class="pre-page" >上一页</a></li>
+      <li class="active"><a href="#"><span id="current-page">1</span></a></li>
+      <li><a href="#"  class="next-page">下一页</a></li>
+      <li><a href="#" class="sum-page">末页：<span id="sum-page">1</span></a></li>
+    </ul>
+</div>
+
+<!--add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">新增模板</h4>
+      </div>
+      <div class="modal-body" style="padding:20px 40px;">
+        <form id="addTemplate_form" action="/template/addTemplate" method="post">
+            <div class="form-group">
+              <label for="exampleInputEmail1">模板名：</label>
+              <input type="txt" class="form-control" id="template_name_cn" name="template_name_cn" placeholder="输入模板中文名"/>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">英文名：</label>
+              <input type="txt" class="form-control" id="template_name_en" name="template_name_en"  placeholder="输入模板英文名"/>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">位置：</label>
+              <input type="txt" class="form-control" id="position"  name="position"  placeholder="输入模板位置，如rightResult"/>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">类目ID：</label>
+              <input type="txt" class="form-control"  id="category_id" name="category_id"  placeholder="输入类目ID，如4098"/>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">分组：</label>
+              <input type="txt" class="form-control" id="group"  name="group"  placeholder="输入模板分组"/>
+            </div>
+            <input type="hidden" class="form-control" id="is_global"  name="is_global" value="0" />
+            <input type="hidden" class="form-control"  id="is_wise" name="is_wise" value="0"  />
+            <input type="hidden" class="form-control" id="defaultContent" name="defaultContent"/>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary add">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">编辑模板基本信息</h4>
+      </div>
+      <div class="modal-body" style="padding:20px 40px;">
+        <form id="addTemplate_form" action="/template/addTemplate" method="post">
+            <div class="form-group">
+              <label for="exampleInputEmail1">模板名：</label>
+              <input type="txt" class="form-control" id="template_name_cn-edit" name="template_name_cn" placeholder="输入模板中文名"/>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">英文名：</label>
+              <input type="txt" class="form-control" id="template_name_en-edit" name="template_name_en"  placeholder="输入模板英文名"/>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">位置：</label>
+              <input type="txt" class="form-control" id="position-edit"  name="position"  placeholder="输入模板位置，如rightResult"/>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">类目ID：</label>
+              <input type="txt" class="form-control"  id="category_id-edit" name="category_id"  placeholder="输入类目ID，如4098"/>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">分组：</label>
+              <input type="txt" class="form-control" id="group-edit"  name="group"  placeholder="输入模板分组"/>
+            </div>
+            <input type="hidden" class="form-control" id="template_id-edit"  value="0" />
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary edit">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--edit xml Modal -->
+<div class="modal fade" id="editXmlModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">编辑XML内容</h4>
+      </div>
+      <div class="modal-body" style="padding:20px 40px;">
+        <textarea id="xml_content-edit" style="width:100%;height:200px;"></textarea>
+         <input type="hidden" class="form-control" id="template_id-editXml"  value="0" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary editXml">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- update xml Modal -->
+<div class="modal fade" id="updateXmlModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">是否确认更新此模板的XML为FE提供的线上内容？</h4>
+      </div>
+      <div class="modal-body" style="padding:20px 40px;">
+        <code id="target-template"></code>
+        <input type="hidden" id="template_id-updateXml" name="template_id" value="-1" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning updateXml" >确认</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">是否确认删除此模板</h4>
+      </div>
+      <div class="modal-body" style="padding:20px 40px;">
+        <code id="target-name"></code>
+        <input type="hidden" id="delete-id" name="template_id" value="-1" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger delete" >确认</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+ <!--{literal}-->
+ var templates = "";
+ var keyword ="";
+ var current_page = 1;
+ var sum_page = 1;
+ $('.first-page').click(function(){
+    current_page = 1;
+    loadTemplates();
+    $('#current-page').html(current_page);
+});
+$('.pre-page').click(function(){
+    if(current_page > 1){
+        current_page --;
+        loadTemplates();
+        $('#current-page').html(current_page);
+    }
+});
+$('.next-page').click(function(){
+    if(current_page < sum_page){
+        current_page ++;
+        loadTemplates();
+        $('#current-page').html(current_page);
+    }
+    
+});
+$('.sum-page').click(function(){
+    current_page = sum_page;
+    loadTemplates();
+    $('#current-page').html(current_page);
+    
+});
+loadTemplates();
+function loadTemplates(){
+   $.get("/template/GetTemplates?is_wise=0&is_global=0&page_num="+current_page + "&keyword=" + keyword, function(result){
+        try{
+            templates = JSON.parse(result).data;
+            sum_page = JSON.parse(result).sum_page;
+            $('#sum-page').html(sum_page);
+            $('#templates_table').html('');
+            for (var i = 0; i < templates.length ; i++) {
+                var tr_html = '<tr>';
+                tr_html += '<td>' + templates[i].tplDisplay + '</td>';
+                tr_html += '<td>' + templates[i].tplName + '</td>';
+                tr_html += '<td>' + templates[i].position + '</td>';
+                tr_html += '<td>' + templates[i].alaCategoryId + '</td>';
+                tr_html += '<td>' + templates[i].group + '</td>';
+                tr_html += '<td>';
+              
+                tr_html += '<a href="#"  onclick="loadEdit(this)" data-index="' + i + '" data-toggle="modal" data-target="#editModal">修改</a>';
+                tr_html += '<a href="#"  onclick="loadXml(this)" data-index="' + i + '" data-toggle="modal" data-target="#editXmlModal">编辑XML</a>';
+                tr_html += '<a href="#" onclick="loadUpdateXml(this)"  data-toggle="modal" data-target="#updateXmlModal" data-index="' + i + '">更新模板</a>';
+                tr_html += '<a href="#" onclick="loadDelete(this)"  data-toggle="modal" data-target="#deleteModal" data-name="' + templates[i].tplName + '" data-key="' + templates[i].id + '">删除</a>';
+                tr_html += '</td>'; 
+                tr_html += '<td><div class="switch switch-mini tip" data-key="' + templates[i].id + '"  title="关闭后该模板不显示" data-on="success" data-off="danger">';
+                if (templates[i].is_used == 1) {
+                  tr_html += '<input type="checkbox" checked />';
+                }else{
+                  tr_html += '<input type="checkbox" />';
+                }
+                
+                tr_html += '</div></td>';
+                tr_html += '</tr>';
+                
+                $('#templates_table').append(tr_html);
+            };
+
+          $('.switch')['bootstrapSwitch']();
+          $('.tip').tooltip();
+          $('.switch').on('switch-change', function (e, data) {
+              var resource_id = $(this).attr('data-key');
+              var is_used = 0;
+              if (data.value) {
+                is_used = 1;
+              }else{
+                is_used = 0;
+              }
+              $.get("/template/ChangeIsUsed?id="+resource_id + "&is_used="+is_used, function(data){
+                  try{
+                    var result = JSON.parse(data);
+                    //alert(result.msg); 
+                  }catch(e){
+                      alert("更新资源失败：" + e.message);
+                  }   
+              }); 
+          });
+
+        }catch(e){
+            alert("获取模板列表失败" + e.message);
+        }
+
+      }); 
+}
+$('.search').click(function(){
+  keyword = $.trim($('#keyword').val());
+  current_page = 1;
+  loadTemplates();
+  $('#current-page').html(current_page);
+});
+$('.add').click(function(){
+  var template_name_cn = $.trim($('#template_name_cn').val());
+  var template_name_en = $.trim($('#template_name_en').val());
+  var position = $.trim($('#position').val());
+  var category_id = $.trim($('#category_id').val());
+  var group = $.trim($('#group').val());
+  var is_global = $.trim($('#is_global').val());
+  var is_wise = $.trim($('#is_wise').val());
+  if (template_name_cn.length === 0) {
+    alert("模板中文名不允许为空");
+    return;
+  };
+  if (template_name_en.length === 0) {
+    alert("模板英文名不允许为空");
+    return;
+  };
+  if (position.length === 0) {
+    alert("位置不允许为空");
+    return;
+  };
+  if (category_id.length === 0) {
+    alert("类目ID不允许为空");
+    return;
+  };
+  if (group.length === 0) {
+    alert("模板中文名不允许为空");
+    return;
+  };
+  if (group.length === 0) {
+    alert("模板分组不允许为空");
+    return;
+  };
+
+
+
+            var xml_content = '';
+            <!--{literal}-->
+            $.post("/template/AddTemplate",{template_name_cn:template_name_cn, template_name_en:template_name_en, position:position, category_id:category_id, group:group, is_global:is_global, is_wise:is_wise, xml_content:xml_content}, function(data){
+                try{
+                    var result = JSON.parse(data);
+                    if(result['code'] !== 0){
+                        alert(result.msg);
+                        return ;
+                    }else{
+                      window.location.reload();
+                    }
+                    
+
+                }catch(e){
+                    alert("添加新模版失败：" + e.message);
+                }
+
+            }); 
+            <!--{/literal}-->
+            
+
+}); 
+
+function loadEdit(obj){
+  <!--{literal}-->
+  var index = parseInt($(obj).attr('data-index'));
+  var template = templates[index];
+  $('#template_name_cn-edit').val(template.tplDisplay);
+  $('#template_name_en-edit').val(template.tplName);
+  $('#position-edit').val(template.position);
+  $('#category_id-edit').val(template.alaCategoryId);
+  $('#group-edit').val(template.group);
+  $('#template_id-edit').val(template.id);
+
+   <!--{/literal}-->
+}
+$('.edit').click(function(){
+  var template_id = parseInt($('#template_id-edit').val());
+  var template_name_cn = $.trim($('#template_name_cn-edit').val());
+  var template_name_en = $.trim($('#template_name_en-edit').val());
+  var position = $.trim($('#position-edit').val());
+  var category_id = $.trim($('#category_id-edit').val());
+  var group = $.trim($('#group-edit').val());
+  var is_global = $.trim($('#is_global-edit').val());
+  var is_wise = $.trim($('#is_wise-edit').val());
+  if (template_name_cn.length === 0) {
+    alert("模板中文名不允许为空");
+    return;
+  };
+  if (template_name_en.length === 0) {
+    alert("模板英文名不允许为空");
+    return;
+  };
+  if (position.length === 0) {
+    alert("位置不允许为空");
+    return;
+  };
+  if (category_id.length === 0) {
+    alert("类目ID不允许为空");
+    return;
+  };
+  if (group.length === 0) {
+    alert("模板中文名不允许为空");
+    return;
+  };
+  if (group.length === 0) {
+    alert("模板分组不允许为空");
+    return;
+  };
+  $.post("/template/EditTemplate",{template_id:template_id, template_name_cn:template_name_cn, template_name_en:template_name_en, position:position, category_id:category_id, group:group}, function(data){
+        try{
+            var result = JSON.parse(data);
+            if(result['code'] !== 0){
+                alert(result.msg);
+                return ;
+            }else{
+              window.location.reload();
+            }
+            
+
+        }catch(e){
+            alert("编辑模版失败：" + e.message);
+        }
+
+    }); 
+});
+function loadXml(obj){
+  <!--{literal}-->
+  var index = parseInt($(obj).attr('data-index'));
+  var template = templates[index];
+  $('#xml_content-edit').val(template.defaultContent);
+  $('#template_id-editXml').val(template.id);
+   <!--{/literal}-->
+}
+$('.editXml').click(function(){
+  var template_id = parseInt($('#template_id-editXml').val());
+  var xml_content = $.trim($('#xml_content-edit').val());
+  $.post("/template/EditTemplateXml",{template_id:template_id, xml_content:xml_content}, function(data){
+        try{
+            var result = JSON.parse(data);
+            if(result['code'] !== 0){
+                alert(result.msg);
+                return ;
+            }else{
+              window.location.reload();
+            }
+            
+
+        }catch(e){
+            alert("编辑模版XML失败：" + e.message);
+        }
+
+    }); 
+});
+function loadUpdateXml(obj){
+  var index = parseInt($(obj).attr('data-index'));
+  var template = templates[index];
+  $('#target-template').html(template.tplName);
+  $('#template_id-updateXml').val(template.id);
+}
+$('.updateXml').click(function(){
+  var template_id = $('#template_id-updateXml').val();
+   <!--{literal}-->
+  $.post("/template/UpdateTemplateXml",{template_id:template_id}, function(data){
+      try{
+          var result = JSON.parse(data);
+          if(result['code'] !== 0){
+              alert("更新模板XML失败：" + result.msg);
+              return ;
+          }else{
+            window.location.reload();
+          }
+          
+
+      }catch(e){
+          alert("更新模板XML失败：" + e.message);
+      }
+
+  }); 
+   <!--{/literal}-->
+});
+function loadDelete(obj){
+  var template_name = $(obj).attr('data-index');
+  var template_id = $(obj).attr('data-key');
+  $('#target-name').html(template_name);
+  $('#delete-id').val(template_id);
+}
+$('.delete').click(function(){
+  var template_id = $('#delete-id').val();
+   <!--{literal}-->
+  $.post("/template/DeleteTemplate",{template_id:template_id}, function(data){
+      try{
+          var result = JSON.parse(data);
+          if(result['code'] !== 0){
+              alert("删除模板失败：" + result.msg);
+              return ;
+          }else{
+              $('#deleteModal').modal('hide');
+              loadTemplates();
+
+          }
+          
+
+      }catch(e){
+          alert("删除模板失败：" + e.message);
+      }
+
+  }); 
+   <!--{/literal}-->
+});
+ <!--{/literal}-->
+</script>
+{/block}
+

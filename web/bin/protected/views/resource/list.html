@@ -1,0 +1,255 @@
+{extends "layout.html"}
+{block name="title"}{/block}
+{block name=style}
+<style type="text/css">
+#resources_table a{ margin: 5px;}
+</style>
+{/block}
+
+{block name=main}
+<div class="main-box">
+    <div  class="alert alert-info" role="alert">
+        当前位置:资源管理 <i class="glyphicon glyphicon-info-sign"></i> 新增资源请点击<a href="/resource/AddResourcePage" class="btn btn-primary btn-sm" >添加资源</a>
+        <span class="input-group" style="float:right;width:200px;margin-right:10%;">
+          <input type="text" class="form-control" id="keyword" placeholder="输入资源名搜索">
+          <span class="input-group-btn">
+            <button class="btn btn-default search" type="button"> <i class="fa fa-search"></i> </button>
+          </span>
+        </span><!-- /input-group -->
+    </div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="active"><a href="#baidu" class="baidu" role="tab" data-toggle="tab">百度内部资源</a></li>
+      <li><a href="#partner" role="tab" class="partner" data-toggle="tab">合作方资源</a></li>
+    </ul>
+    <div >
+      <table class="table table-responsive table-hover table-striped">
+          <thead>
+              <tr>
+                <th>编号</th>
+                <th>资源名</th>
+                <th>模板名</th>
+                <th>创建时间</th>
+                <th>创建人</th>
+                <th>最近上线时间</th>
+                <th>状态</th>
+                <th>操作</th>
+                <th>拟合开关</th> 
+                <!-- Nav tabs -->
+              </tr>
+          </thead>
+          <tbody id="resources_table" style="font-size:12px;">
+
+          </tbody>
+      </table>
+    </div>
+    <ul class="pagination  pagination-sm">
+      <li> <a href="#" class="first-page" >首页</a></li>
+      <li><a href="#" class="pre-page" >上一页</a></li>
+      <li class="active"><a href="#"><span id="current-page">1</span></a></li>
+      <li><a href="#"  class="next-page">下一页</a></li>
+      <li><a href="#" class="sum-page">末页：<span id="sum-page">1</span></a></li>
+    </ul>
+
+<!-- delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">是否确认删除此资源？</h4>
+      </div>
+      <div class="modal-body" style="padding:20px 40px;">
+        <code id="target-name"></code>
+        <input type="hidden" id="delete-id" name="template_id" value="-1" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger delete" >确认</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+var keyword ="";
+var resources = "";
+ var current_page = 1;
+ var sum_page = 1;
+ var resource_from = 0;
+ $('.baidu').click(function(){
+    current_page = 1;
+    resource_from = 0;
+    loadResources();
+    $('#current-page').html(current_page);
+    
+});
+$('.partner').click(function(){
+    current_page = 1;
+    resource_from = 1;
+    loadResources();
+    $('#current-page').html(current_page);
+    
+});
+ $('.first-page').click(function(){
+    current_page = 1;
+    loadResources();
+    $('#current-page').html(current_page);
+});
+$('.pre-page').click(function(){
+    if(current_page > 1){
+        current_page --;
+        loadResources();
+        $('#current-page').html(current_page);
+    }
+});
+$('.next-page').click(function(){
+    if(current_page < sum_page){
+        current_page ++;
+        loadResources();
+        $('#current-page').html(current_page);
+    }
+    
+});
+$('.sum-page').click(function(){
+    current_page = sum_page;
+    loadResources();
+    $('#current-page').html(current_page);
+    
+});
+  // $.ajaxSetup({ 
+  //     async : false 
+  // });
+
+loadResources();
+function loadResources(){
+
+   $.get("/resource/GetResources?page_num=" + current_page + "&keyword=" + keyword + "&resource_from="+resource_from, function(result){
+        try{
+            resources = JSON.parse(result).data;
+            sum_page = JSON.parse(result).sum_page;
+            $('#sum-page').html(sum_page);
+            $('#resources_table').html('');
+            for (var i = 0; i < resources.length; i++) {
+                var tr_html = '<tr>';
+                tr_html += '<td>' + resources[i].id + '</td>';
+                tr_html += '<td>' + resources[i].alaNameDisp + '</td>';
+                if (resources[i].template!==null) {
+                    tr_html += '<td>' + resources[i].tplName + '</td>';
+                }else{
+                    tr_html += '<td>未找到关联模板 </td>';
+                }
+                
+                tr_html += '<td>' + resources[i].created + '</td>';
+                tr_html += '<td>' + resources[i].createUser + '</td>';
+                tr_html += '<td>' + resources[i].submitTime + '</td>';
+                if (resources[i].status == 0) {
+                  tr_html += '<td><span class="label label-default">未上线</span></td>';
+                }else if(resources[i].status == 1){
+                  tr_html += '<td><span class="label label-success">已上线</span></td>';
+                }else if(resources[i].status == -1){
+                  tr_html += '<td><span class="label label-danger">资源异常</span></td>';
+                }else{
+                  tr_html += '<td><span class="label label-warning">未知状态</span></td>';
+                }
+                tr_html += '<td>'
+                tr_html += '<a href="#" onclick="uploadToAladdin('+ resources[i].id +')" >上线</a>';
+                tr_html += '<a href="/resource/GetResourceXml?id='+ resources[i].id +'" target="_blank">XML</a>';
+                tr_html += '<a href="/resource/EditResourcePage?id='+ resources[i].id +'">修改</a>';
+                tr_html += '<a href="#" onclick="loadDelete(this)"  data-index="' + i + '"  data-toggle="modal" data-target="#deleteModal">删除</a>';
+                tr_html += '</td>'; 
+                tr_html += '<td><div class="switch switch-mini tip" data-key="' + resources[i].id + '"  title="关闭后该资源不参与拟合" data-on="success" data-off="danger">';
+                if (resources[i].is_used == 1) {
+                  tr_html += '<input type="checkbox" checked />';
+                }else{
+                  tr_html += '<input type="checkbox" />';
+                }
+                
+                tr_html += '</div></td>';
+
+                tr_html += '</tr>';
+                
+                $('#resources_table').append(tr_html);
+
+            };
+          $('.switch')['bootstrapSwitch']();
+          $('.tip').tooltip();
+          $('.switch').on('switch-change', function (e, data) {
+              var resource_id = $(this).attr('data-key');
+              var is_used = 0;
+              if (data.value) {
+                is_used = 1;
+              }else{
+                is_used = 0;
+              }
+              $.get("/resource/ChangeIsUsed?id="+resource_id + "&is_used="+is_used, function(data){
+                  try{
+                    var result = JSON.parse(data);
+                    //alert(result.msg); 
+                  }catch(e){
+                      alert("更新资源失败：" + e.message);
+                  }   
+              }); 
+          });
+
+        }catch(e){
+            alert("获取资源列表失败" + e.message);
+        }
+
+      }); 
+}
+function uploadToAladdin(id){
+  var url = "/resource/upload?id="+id;
+  $.get(url, function(data){
+        try{
+          var result = JSON.parse(data);
+          if (result.code == 0) {
+            alert("上传成功！资源ID：" + result.resource_id);
+          }else{
+            alert(result.msg);
+          }
+          //alert(result.msg); 
+        }catch(e){
+            alert("更新资源失败：" + e.message);
+        }   
+    }); 
+
+}
+function loadDelete(obj){
+
+  var index = $(obj).attr('data-index');
+  var resource_name = resources[index].alaNameDisp;
+  $('#target-name').html(resource_name);
+  $('#delete-id').val(resources[index].id);
+}
+
+$('.search').click(function(){
+  keyword = $.trim($('#keyword').val());
+  current_page = 1;
+  loadResources();
+  $('#current-page').html(current_page);
+});
+
+$('.delete').click(function(){
+  var resource_id = $('#delete-id').val();
+  <!--{literal}-->
+  $.post("/resource/DeleteResource",{resource_id:resource_id}, function(data){
+      try{
+          var result = JSON.parse(data);
+          if(result['code'] !== 0){
+              alert("删除资源失败：" + result.msg);
+              return ;
+          }else{
+             $('#deleteModal').modal('hide');
+              loadResources();
+          } 
+
+      }catch(e){
+          alert("删除资源失败：" + e.message);
+      }
+       <!--{/literal}-->   
+  }); 
+ }); 
+
+</script>
+{/block}
+

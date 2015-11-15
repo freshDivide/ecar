@@ -1,0 +1,399 @@
+{extends "layout.html"}
+{block name="title"}新建资源{/block}
+{block name=style}
+<style type="text/css">
+#resources_table a{ margin: 5px;}
+<!--{literal}-->
+h1,h2,h3,h4,h5{font-weight: bold;}
+.form-group{ line-height: 10px;}
+.form-group input{padding: 0px 6px;font-size: 12px;line-height: 10px;}
+   <!--{/literal}-->
+</style>
+{/block}
+
+{block name=main}
+<div class="main-box">
+
+    <div  class="alert alert-info" role="alert">
+        当前位置:<a href="/resource/resources">资源管理</a> >> 添加资源 <i class="glyphicon glyphicon-info-sign"></i>如果看不到模板，请到模板管理页打开模板开关
+    </div>
+        <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist" align="center">
+    </ul>
+    <div style="padding:20px 0; ">
+        <form role="form" class="form-inline">
+
+          <div>
+              <div class="row-fluid" id="template-form">
+                  <div>1.请先选择模板：</div>
+                  <div class="col-md-6">
+                    <h5>常用模板：</h5>
+                    <select multiple id="usual-templates" class="form-control" style="width:100%;height:300px;">
+                      <option>1</option>
+                      <option>2</option>
+                      <option>3</option>
+                      <option>4</option>
+                      <option>5</option>
+                    </select>
+                  </div>
+                  <!--<div class="col-md-6">
+                    <h5>非常用模板：</h5>
+                    <select multiple id="unusual-templates" class="form-control" style="width:100%;">
+                      <option>1</option>
+                      <option>2</option>
+                      <option>3</option>
+                      <option>4</option>
+                      <option>5</option>
+                    </select>
+                  </div>
+                  -->
+
+                  <br style="clear:both;" />
+                  <div style="padding:20px;">
+                    <a href="#" onclick="showAddForm()" class="btn btn-success">确定</a>
+                  </div>
+              </div>
+              <div class="row-fluid" style="display:none;" id="add-form">
+                <div class="col-md-6">
+                    <div id="preview-text" style="padding:100px;">正在发送预览请求...</div>
+                    <iframe id="preview-frame" src="" width="100%" height="400px" style="display:none;"></iframe>
+                </div>
+                <div class="col-md-6">
+                    <div style="font-size:12px;overflow-y:scroll;height:400px;">
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">资源中文名：</label>
+                        <input type="text" class="form-control" id="resource_name_cn" placeholder="输入资源中文名">
+                      </div>
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">资源英文名：</label>
+                        <input type="text" class="form-control" id="resource_name_en" placeholder="输入资源英文名">
+                      </div>
+
+                      <div id="sample-box"></div>
+                    </div>
+                </div>
+                <br style="clear:both;" />
+                <div align="center" style="padding:10px;">
+                  <a  class="btn btn-info xml"   data-toggle="modal" data-target="#editXmlModal">直接编辑XML</a>
+                  <a  class="btn btn-primary add">保存</a>
+                  <a  class="btn btn-success validate">验证</a>
+                </div>
+              </div>
+          </div>
+
+
+
+
+        </form>
+    </div>
+</div>
+<!--edit xml Modal -->
+<div class="modal fade" id="editXmlModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">编辑XML内容</h4>
+      </div>
+      <div class="modal-body" style="padding:20px 40px;">
+        <textarea id="temp" style="width:100%;height:200px;"></textarea>
+         <input type="hidden" class="form-control" id="template_id-editXml"  value="0" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" onclick="reloadXml()" class="btn btn-primary editXml">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery.xml2json.js"></script>
+<script type="text/javascript">
+var current_template = 0;
+
+function showAddForm(){
+  current_template = $("#usual-templates").val()[0];
+  if (current_template == null) {
+    alert('请先选择模板');
+  }else{
+    $('#template-form').hide("normal");
+    $('#add-form').show("normal",function(){
+      loadTemplate(current_template);
+    });
+  }
+}
+loadTemplates();
+function loadTemplates(){
+   $.get("/template/GetTemplates?is_wise=0&is_global=0&is_used=1&page_num=1&is_page=0", function(result){
+        try{
+            templates = JSON.parse(result).data;
+            sum_page = JSON.parse(result).sum_page;
+            $('#usual-templates').html('');
+            for (var i = 0; i < templates.length ; i++) {
+                var option_html = '';
+                option_html += '<option data-key="' + templates[i].id + '" value="' + templates[i].id + '">' + templates[i].tplDisplay + '</option>';
+                $('#usual-templates').append(option_html);
+            };
+
+        }catch(e){
+            alert("获取模板列表失败" + e.message);
+        }
+
+      });
+
+      // $.get("/template/GetTemplates?is_wise=0&is_global=0&is_used=0&page_num=1&is_page=0", function(result){
+      //   try{
+      //       templates = JSON.parse(result).data;
+      //       sum_page = JSON.parse(result).sum_page;
+      //       $('#unusual-templates').html('');
+      //       for (var i = 0; i < templates.length ; i++) {
+      //           var option_html = '';
+      //           option_html += '<option data-key="' + templates[i].id + '">' + templates[i].tplDisplay + '</option>';
+      //           $('#unusual-templates').append(option_html);
+      //       };
+
+      //   }catch(e){
+      //       alert("获取模板列表失败" + e.message);
+      //   }
+
+      // });
+}
+//loadTemplate(current_template);
+
+$('.add').click(function(){
+  var resource_name_en = $.trim($('#resource_name_en').val());
+  var resource_name_cn = $.trim($('#resource_name_cn').val());
+  if (resource_name_en.length == 0) {
+    alert("资源英文名不能为空");
+    return false;
+  };
+  if (resource_name_cn.length == 0) {
+    alert("资源中文名不能为空");
+    return false;
+  };
+  <!--{literal}-->
+  var xml_content = $('#temp').val();
+    $.post("/resource/AddResource",{resource_name_en:resource_name_en, resource_name_cn:resource_name_cn, template_id:current_template, xml_content:xml_content}, function(data){
+        try{
+            var result = JSON.parse(data);
+            alert(result.msg);
+            if(result.code !== 0){
+                return ;
+            }else{
+                window.location.href="/resource/resources";
+            }
+
+
+        }catch(e){
+            alert("添加资源失败：" + e.message);
+        }
+
+    });
+    <!--{/literal}-->
+});
+$('.validate').click(function(){
+  <!--{literal}-->
+    var xml_content = $('#temp').val();
+    $.post("/template/ValidateXml",{template_id:current_template, xml_content:xml_content}, function(data){
+        try{
+            var result = JSON.parse(data);
+            if(result.code !== 0){
+                alert(result.msg);
+                return ;
+            }else{
+                alert(result.msg);
+            }
+
+
+        }catch(e){
+            alert("验证XML格式失败：" + e.message);
+        }
+
+    });
+    <!--{/literal}-->
+});
+function reloadXml(){
+  try{
+      var xml_content = $('#temp').val();
+      var sample = $.xml2json(xml_content);
+      $('#sample-box').html(json2html(sample));
+      generateXml();
+       $('#editXmlModal').modal('hide');
+  }catch(e){
+      alert("XML转换Json失败：" + e.message);
+  }
+}
+function loadTemplate(template_id){
+   $.get("/template/GetTemplateXMLById?template_id=" + template_id, function(xml_content){
+        try{
+            try{
+                var sample = $.xml2json(xml_content);
+                $('#sample-box').html(json2html(sample));
+                generateXml();
+            }catch(e){
+                alert("XML转换Json失败：" + e.message);
+            }
+
+
+        }catch(e){
+            alert("获取阿拉丁模板失败：" + e.message);
+        }
+
+    });
+}
+
+function json2html(json_obj, parentName, isArray, isAttribute){
+    var html_result = '';
+    for (var key in json_obj) {
+        if(json_obj[key]!=""){
+            if(typeof(json_obj[key]) === 'object'){
+                 if(json_obj[key] instanceof Array){
+                     html_result += json2html(json_obj[key], key, 1, 0);
+                 }else{
+                     if (isArray == 1) {
+                         html_result += '<div class="tag"  style="margin:10px 0;line-height:30px;" istag="0" tagname="' + parentName + '" ><span class="label label-primary">' + parentName + ':</span><input type="button" value="+" onclick="cloneElement(this)" class="btn btn-primary btn-sm"><input type="button" value="-" onclick="delElement(this)" class="btn btn-primary btn-sm"><div style="border:dashed 1px #ddd;border-radius:5px;padding:5px;"></div>' + json2html(json_obj[key]) + '</div>';
+                     }else{
+                         html_result += '<div class="tag"  style="margin:10px 0;line-height:30px;" istag="0" tagname="' + key + '" ><span class="label label-primary">' + key + ':</span><input type="button" value="+" onclick="cloneElement(this)" class="btn btn-primary btn-sm"><input type="button" value="-" onclick="delElement(this)" class="btn btn-primary btn-sm"><div style="border-top:dashed 1px #ddd;border-radius:5px;padding:5px;"></div>' + json2html(json_obj[key], key, 0, 1) + '</div>';
+                     }
+
+                 }
+
+            }else{
+                 var value = json_obj[key];
+
+                 if (!isNaN(key)) {
+                   key = parentName;
+                 }
+                 html_result += '<div class="form-group tag" istag="1" tagname="' + key + '" >';
+                 html_result += '<label>' + key +'：</label>';
+                 html_result += '<input type="text" class="form-control xml-input" onblur="generateXml()"  value="' + value + '" placeholder="输入'+ key + '的值">';
+                 html_result += '</div>';
+            }
+
+        }
+
+    }
+    return html_result;
+}
+function cloneElement(obj){
+  var clone = $(obj.parentNode).clone();
+  $(obj.parentNode).after(clone);
+  generateXml();
+}
+function delElement(obj){
+  obj.parentNode.remove();
+  generateXml();
+}
+function loadPreviewUrl(template_id,xml_content){
+    $('#preview-text').hide('normal');
+    $('#preview-frame').show('normal');
+    <!--{literal}-->
+    $.post("/template/GetResourcePreviewUrl",{template_id:template_id, xml_content:xml_content}, function(data){
+        try{
+            var result = JSON.parse(data);
+            if(result.code !== 0){
+                alert(result.data);
+                return ;
+            }
+            var preview_url = result.data;
+            $('#preview-frame').attr('src',  preview_url);
+
+
+        }catch(e){
+            alert("获取FE预览接口内容失败：" + e.message);
+        }
+
+    });
+    <!--{/literal}-->
+}
+function isAttribute(attr){
+  if(attr.indexOf('@') != -1){
+    return true;
+  }else{
+    return false;
+  }
+
+}
+function generateXml(){
+  var content = $('#sample-box').html();
+  $('#temp').val($('#sample-box').html());
+  var root = $('#sample-box');
+  var xml_head = '<?xml version="1.0" encoding="UTF-8"?>';
+  var xml_root = '';
+  //如果root标签含多个子节点
+  if(root.children().length > 1){
+    xml_root = '<DOCUMENT';
+    var tags = $(root).children();
+    $.each(tags, function(key,tag){
+      var attribute = $(tag).attr('tagname');
+      if (isAttribute(attribute)) {
+        attribute = attribute.replace('@','');
+        xml_root += ' ' + attribute + '="' + $(tag).find('input').val() + '"';
+      }
+    });
+    xml_root += '>';
+  }else{
+    xml_root = '<DOCUMENT>';
+  }
+  var xml_root_end = '</DOCUMENT>';
+  var xml_content = xml_head + xml_root +  generateXmlTag(root) + xml_root_end;
+  $('#temp').val(xml_content);
+  loadPreviewUrl(current_template, xml_content);
+}
+function generateXmlTag(root){
+  var xml = "";
+  var tags = $(root).children();
+
+  $.each(tags, function(key,tag){
+    var temptag=$(tag).attr('tagName');
+    //回调函数有两个参数,第一个是元素索引,第二个为当前值
+    var istag = $(tag).attr('istag');
+    if(istag === "0"){
+      if (!isAttribute($(tag).attr('tagname'))) {
+        var temp_tags = $(tag).children();
+        xml += '<' + $(tag).attr('tagname');
+
+        var attr_flag = false;
+        $.each(temp_tags, function(key,temp_tag){
+          var tagname = $(temp_tag).attr('tagname');
+          if (tagname != undefined) {
+            if (isAttribute(tagname)){
+                attr_flag = true;
+            }
+          };
+
+        });
+        if (attr_flag) {
+          xml += generateXmlTag(tag);
+          xml += ' />';
+        }else{
+          xml += '>';
+          xml += generateXmlTag(tag);
+          xml += '</' + $(tag).attr('tagname')+ '>';
+        }
+
+      }
+    }else if(istag === "1"){
+      if (!isAttribute($(tag).attr('tagname'))) {
+
+        xml += '<' + $(tag).attr('tagname')+ '>' + $(tag).find('input').val() + '</' + $(tag).attr('tagname')+ '>';
+
+      }else{
+        //如果不是根节点的属性
+        var parentTag = $(tag).parent().attr('tagname');
+        if(parentTag !== undefined){
+          var attribute = $(tag).attr('tagname');
+          attribute = attribute.replace('@','');
+          xml += ' ' + attribute + '="' + $(tag).find('input').val() + '"';
+        }
+      }
+
+    }else{
+      var temphtml = $(tag).html();
+      $('#temp').val($(tag).html());
+    }
+
+  });
+  return xml;
+}
+</script>
+{/block}
