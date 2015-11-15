@@ -2,7 +2,8 @@
 /**
  * SystemController is the default controller when access the server
  *
- * @author
+ * @author Ren
+ * @date 2015/11/15
 */
 class SystemController extends Controller {
 
@@ -14,10 +15,7 @@ class SystemController extends Controller {
     }
 
     public function actionIndex() {
-
-        echo "Hello World!";
-
-
+        $this->forward('/user/list');
     }
 
 	public function actionResources() {

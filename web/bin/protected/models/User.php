@@ -2,7 +2,8 @@
 /**
  * access User model
  *
- * @author renbaozhan
+ * @author Ren
+ * @date 2015-11-15
 */
 
 class User extends RActiveRecord {

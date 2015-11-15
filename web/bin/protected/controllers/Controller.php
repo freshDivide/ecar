@@ -2,7 +2,8 @@
 /**
  * A super class using as a controller to do the cas, uic, uacs work before login to the server
  *
- * @author
+ * @author Ren
+ * @date 2015/11/15
 */
 class Controller extends CController {
 
@@ -30,7 +31,6 @@ class Controller extends CController {
 
         Yii::app()->session->open();
         $filterChain->run();
-
     }
 
 

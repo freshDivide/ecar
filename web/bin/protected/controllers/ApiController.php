@@ -2,8 +2,8 @@
 /**
  * apiController contains the systems api for external service
  *
- * @author renbaozhan
- * @date 2015/6/30
+ * @author Ren
+ * @date 2015/11/15
 */
 class ApiController extends Controller {
     /**
