@@ -14,9 +14,12 @@ class ToolManager {
             "data" => $data);
     }
 
-   public static function post($url, $post = null, $retries = 1){
-        $curl = curl_init($url);
+    public static function post($url, $post = null, $retries = 1){
+        #$curl = curl_init($url);
+        $curl = curl_init();
         if(is_resource($curl) === true){
+                curl_setopt($curl, CURLOPT_URL, $url);
+                curl_setopt($curl, CURLOPT_HEADER, 0);
                 curl_setopt($curl, CURLOPT_FAILONERROR, true);
                 curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -37,8 +40,39 @@ class ToolManager {
 
                 curl_close($curl);
         }
-
         return $result;
     }
+
+    public static function xml_to_array($xml){
+        $reg = "/<(\w+)[^>]*>([\\x00-\\xFF]*)<\\/\\1>/";
+        if(preg_match_all($reg, $xml, $matches)){
+            $count = count($matches[0]);
+            for($i = 0; $i < $count; $i++){
+                $subxml= $matches[2][$i];
+                $key = $matches[1][$i];
+                if(preg_match($reg, $subxml)){
+                    $arr[$key] = ToolManager::xml_to_array($subxml);
+                }else{
+                    $arr[$key] = $subxml;
+                }
+            }
+        }
+        return $arr;
+    }
+
+    public static function gen_sms_code($length = 6 , $numeric = 0) {
+        PHP_VERSION < '4.2.0' && mt_srand((double)microtime() * 1000000);
+        if($numeric) {
+            $hash = sprintf('%0'.$length.'d', mt_rand(0, pow(10, $length) - 1));
+        } else {
+            $hash = '';
+            $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789abcdefghjkmnpqrstuvwxyz';
+            $max = strlen($chars) - 1;
+            for($i = 0; $i < $length; $i++) {
+                $hash .= $chars[mt_rand(0, $max)];
+            }
+        }
+        return $hash;
+    } 
 }
 ?>
