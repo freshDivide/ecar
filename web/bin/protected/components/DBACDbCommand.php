@@ -29,43 +29,43 @@ class DBACDbCommand extends CDbCommand
     /**
      * 重载execute, 如果不是事务并且出现连接失败的错误，就进行重试,最多重试3次
      */
-    public function execute() {
-        return $this->operateDB(array(get_parent_class($this),"execute"), NULL);
+    public function execute($params=array()) {
+        return $this->operateDB(array(get_parent_class($this),"execute"), $params);
     }
 
     /**
      * 重载query, 如果不是事务并且出现连接失败的错误，就进行重试,最多重试3次
      */
-    public function query() {
-        return $this->operateDB(array(get_parent_class($this),"query"), NULL);
+    public function query($params=array()) {
+        return $this->operateDB(array(get_parent_class($this),"query"), $params=array());
     }
 
     /**
      * 重载queryAll, 如果不是事务并且出现连接失败的错误，就进行重试,最多重试3次
      */
-    public function queryAll($fetchAssociative=true) {
-        return $this->operateDB(array(get_parent_class($this),"queryAll"), array($fetchAssociative));
+    public function queryAll($fetchAssociative=true,$params=array()) {
+        return $this->operateDB(array(get_parent_class($this),"queryAll"), array($fetchAssociative,$params));
     }
 
     /**
      * 重载queryRow, 如果不是事务并且出现连接失败的错误，就进行重试,最多重试3次
      */
-    public function queryRow($fetchAssociative=true) {
-        return $this->operateDB(array(get_parent_class($this),"queryRow"), array($fetchAssociative));
+    public function queryRow($fetchAssociative=true,$params=array()) {
+        return $this->operateDB(array(get_parent_class($this),"queryRow"), array($fetchAssociative,$params));
     }
 
     /**
      * 重载queryScalar, 如果不是事务并且出现连接失败的错误，就进行重试,最多重试3次
      */
-    public function queryScalar() {
-        return $this->operateDB(array(get_parent_class($this),"queryScalar"), NULL);
+    public function queryScalar($params=array()) {
+        return $this->operateDB(array(get_parent_class($this),"queryScalar"), $params);
     }
 
     /**
      * 重载eryColumn, 如果不是事务并且出现连接失败的错误，就进行重试,最多重试3次
      */
-    public function queryColumn() {
-        return $this->operateDB(array(get_parent_class($this),"queryColumn"), NULL);
+    public function queryColumn($params=array()) {
+        return $this->operateDB(array(get_parent_class($this),"queryColumn"), $params);
     }
 	
 	/**
