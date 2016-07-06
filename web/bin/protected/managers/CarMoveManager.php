@@ -73,4 +73,28 @@ class CarMoveManager {
         
         return $record;
     }
+
+    public static function deleteCarMoveInfoRecord($type, $licencePlate, $address){
+        $criteria = new CDbCriteria();
+        $criteria->select = 'style_id';
+        $criteria->condition = "style_name = '".$type."'";
+
+        $record = CarPlateStyle::model()->find($criteria);
+        if ($record == null){
+            $style_id = 0;
+        } else{
+            $style_id = $record->style_id;
+        }
+        
+        $criteria = new CDbCriteria();
+        $criteria->condition = "plate_num='".$licencePlate."' and style_id=".$style_id." and car_address='".$address."'";
+        $record = CarMoveInfo::model()->find($criteria);
+        try{
+            $ret = $record->delete();
+        } catch (Exception $ex){
+            $ret = 1;
+        }
+
+        return $ret;;
+    }
 }

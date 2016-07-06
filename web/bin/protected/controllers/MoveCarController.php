@@ -8,6 +8,7 @@
 date_default_timezone_set('prc');
 class MoveCarController extends Controller {
 
+    /*
     public function filters() {
         return array(
             'auth - error',
@@ -18,6 +19,7 @@ class MoveCarController extends Controller {
 	public function actionList() {
         $this->render('list');
 	}
+    */
 
     public function actionGetUsers() {
         $keyword = addslashes(trim($_GET['keyword']));
@@ -53,16 +55,23 @@ class MoveCarController extends Controller {
     }
 
     public function actionGetCarPlate() {
+        $host_info = Yii::app()->request->hostInfo;
         $results = CarMoveManager::getAllRecordCarPlateStyle();
         $car_plate_res = array();
         foreach ($results as $result) {
             $car_plate = array(
                 'type' => $result->style_name,
-                'imageUrl' => $result->sample_address
+                'imageUrl' => $host_info.DIRECTORY_SEPARATOR.$result->sample_address
             );
             $car_plate_res[] = $car_plate;
         }
-    
+        if ($car_plate_res ==null){
+            $message = '获取图片信息失败，库中无记录！';
+        } else {
+            $message = '获取图片信息成功！';
+        }
+        $car_plate_res = ToolManager::ArrayResult(0, $message, $car_plate_res);
+        
         echo CJSON::encode($car_plate_res);
     }
 
@@ -347,4 +356,21 @@ class MoveCarController extends Controller {
 
         echo CJSON::encode($ret_json);
     }
+
+    public function actionCancelMoveCar() {
+        $phone_num = $_GET['phone'];
+        $sms_code = $_GET['password'];
+        $agree = $_GET['agree'];
+
+        $record = CarMoveManager::deleteCarMoveInfoRecord($type, $licencePlate, $address);
+
+        $ret_json = array(
+                'status' => 0,
+                'message' => '取消挪车请求成功!',
+                'data' => array()
+        );
+
+        echo CJSON::encode($ret_json);
+    }
+
 }
