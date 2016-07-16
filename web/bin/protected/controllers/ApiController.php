@@ -40,13 +40,15 @@ class ApiController extends Controller {
     }
 
     public function actionGetCarPlate() {
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
         $host_info = Yii::app()->request->hostInfo;
         $results = CarMoveManager::getAllRecordCarPlateStyle();
         $car_plate_res = array();
         foreach ($results as $result) {
             $car_plate = array(
                 'type' => $result->style_name,
-                'imageUrl' => $host_info.$result->sample_address
+                'imageUrl' => trim($host_info, '/')."/".$result->sample_address
             );
             $car_plate_res[] = $car_plate;
         }
@@ -56,19 +58,20 @@ class ApiController extends Controller {
             $message = '获取图片信息成功！';
         }
         $car_plate_res = ToolManager::ArrayResult(0, $message, $car_plate_res);
-        
-        echo CJSON::encode($car_plate_res);
+
+        echo $callback."(".CJSON::encode($car_plate_res).");";
     }
 
     public function actionGetCarOwnerInfo() {
-        $type = $_GET['type'];
-        $licencePlate = $_GET['licencePlate'];
-        $address = $_GET['address'];
-        $message = $_GET['message'];
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+        $type = $_REQUEST['type'];
+        $licencePlate = $_REQUEST['licencePlate'];
+        $address = $_REQUEST['address'];
+        $message = $_REQUEST['message'];
 
         $result = CarMoveManager::getAllRecordByPlateStyleIdAndNum($type, $licencePlate);
         $car_move_info = new CarMoveinfo;
-        $car_move_info->sms_code = '000000';
         $car_move_info->plate_num = $licencePlate;
         $car_move_info->car_address = $address;
         $car_move_info->message = $message;
@@ -102,10 +105,14 @@ class ApiController extends Controller {
              echo "存储挪车记录失败".$ex->getMessage();
         }
     
-        echo CJSON::encode($car_owner_info);
+        echo $callback."(".CJSON::encode($car_owner_info).");";
         
     }
+
     public function actionGetAvaliableArea() {
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+
         $records = CarMoveManager::getAllRecordAvaliableArea();
         if (count($records) != 0){
             $area_data = array();
@@ -125,10 +132,13 @@ class ApiController extends Controller {
                 );
         }
     
-        echo CJSON::encode($result);
+        echo $callback."(".CJSON::encode($result).");";
     }
 
     public function actionGetProtocolInfo() {
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+
         $record = CarMoveManager::getAllRecordProtocolInfo();
         if ($record != null){
             $data_protocol = array(
@@ -148,11 +158,14 @@ class ApiController extends Controller {
                 );
         }
     
-        echo CJSON::encode($result);
+        echo $callback."(".CJSON::encode($result).");";
     }
 
     public function actionGetSmsCode() {
-        $phone_num = $_GET['phone_num'];
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+
+        $phone_num = $_REQUEST['phone_num'];
         $sms_code = ToolManager::gen_sms_code(6, 1);
         $sms_send_api = 'https://106.ihuyi.com/webservice/sms.php?method=Submit';
         $api_key = '26b83c917f3963660656779b87ebf099';
@@ -174,9 +187,12 @@ class ApiController extends Controller {
         }
 
         if($status == 2){
-            $record = CarMoveManager::getFirstRecordCarMoveInfo($phone_num);
+            $record = new CarSmsCode;
             if ($record != null){
+                $record->receive_phone = $phone_num;
                 $record->sms_code = $sms_code;
+                $cur_time = date('Y-m-d H:i:s',time());
+                $record->time = date("Y-m-d H:i:s", strtotime($cur_time)); 
                 $record->save();
             }
 
@@ -197,11 +213,14 @@ class ApiController extends Controller {
             );
         }
 
-        echo CJSON::encode($ret_json);
+        echo $callback."(".CJSON::encode($ret_json).");";
     }
 
     public function actionGetInputTips() {
-        $search_key = $_GET['searchkey'];
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+
+        $search_key = $_REQUEST['searchkey'];
         $gaode_input_tips_api = 'http://restapi.amap.com/v3/assistant/inputtips';
         $api_key = '3c11184af876b8ed0c159423e7db3bac';
         $post_data = array(
@@ -237,18 +256,22 @@ class ApiController extends Controller {
             );
         }
 
-        echo CJSON::encode($ret_json);
+        echo $callback."(".CJSON::encode($ret_json).");";
     }
 
     public function actionGetPoiEncode() {
-        $lat = $_GET['lat'];
-        $lon = $_GET['lon'];
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+
+        $lat = $_REQUEST['lat'];
+        $lon = $_REQUEST['lon'];
         $gaode_regeo_api = 'http://restapi.amap.com/v3/geocode/regeo';
         $api_key = '3c11184af876b8ed0c159423e7db3bac';
         $radius = 500;
         $extensions = 'all';
         $batch = false;
         $roadlevel = 1;
+
         $post_data = array(
                 'key' => $api_key,
                 'location' => $lat.",".$lon,
@@ -286,16 +309,20 @@ class ApiController extends Controller {
             );
         }
 
-        echo CJSON::encode($ret_json);
+        echo $callback."(".CJSON::encode($ret_json).");";
     }
 
     public function actionPhoneCallRequest() {
-        $phone_num = $_GET['phone'];
-        $sms_code = $_GET['password'];
-        $agree = $_GET['agree'];
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
 
-        $record = CarMoveManager::getFirstRecordCarMoveInfo($phone_num);
+        $phone_num = $_REQUEST['phone'];
+        $sms_code = $_REQUEST['password'];
+        $agree = $_REQUEST['agree'];
+
+        $record = CarMoveManager::getFirstRecordCarSmsCode($phone_num, $sms_code);
         if ($record != null){
+            CarMoveManager::deleteCarSmsCode($record);
             $sms_code_criterion = $record->sms_code; 
             if ($sms_code == $sms_code_criterion){
                 $status = 0;
@@ -339,13 +366,16 @@ class ApiController extends Controller {
 
         }
 
-        echo CJSON::encode($ret_json);
+        echo $callback."(".CJSON::encode($ret_json).");";
     }
 
     public function actionCancelMoveCar() {
-        $type = $_GET['type'];
-        $licencePlate = $_GET['licencePlate'];
-        $address = $_GET['address'];
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+
+        $type = $_REQUEST['type'];
+        $licencePlate = $_REQUEST['licencePlate'];
+        $address = $_REQUEST['address'];
 
         $record = CarMoveManager::deleteCarMoveInfoRecord($type, $licencePlate, $address);
 
@@ -355,6 +385,6 @@ class ApiController extends Controller {
                 'data' => array()
         );
 
-        echo CJSON::encode($ret_json);
+        echo $callback."(".CJSON::encode($ret_json).");";
     }
 }

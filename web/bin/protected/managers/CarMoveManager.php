@@ -66,10 +66,21 @@ class CarMoveManager {
         return $ret;
     }
 
-    public static function getFirstRecordCarMoveInfo($phone_num) {
+    public static function addCarSmsCode($resource) {
+        try {
+            $ret = $resource->save();
+        } catch (Exception $ex) {
+            throw new Exception($ret."添加挪车记录失败".$ex->getMessage());
+        }
+        return $ret;
+    }
+
+    public static function getFirstRecordCarSmsCode($phone_num, $sms_code) {
         $criteria = new CDbCriteria();
-        $criteria->condition = "car_owner_phone='".$phone_num."'";
-        $record = CarMoveInfo::model()->find($criteria);
+        $criteria->condition = "receive_phone='".$phone_num."' and sms_code='".$sms_code."'";
+        $criteria->order = "time DESC";
+
+        $record = CarSmsCode::model()->find($criteria);
         
         return $record;
     }
@@ -89,6 +100,16 @@ class CarMoveManager {
         $criteria = new CDbCriteria();
         $criteria->condition = "plate_num='".$licencePlate."' and style_id=".$style_id." and car_address='".$address."'";
         $record = CarMoveInfo::model()->find($criteria);
+        try{
+            $ret = $record->delete();
+        } catch (Exception $ex){
+            $ret = 1;
+        }
+
+        return $ret;;
+    }
+
+    public static function deleteCarSmsCode($record){
         try{
             $ret = $record->delete();
         } catch (Exception $ex){
