@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- 主机: localhost
--- 生成日期: 2016 年 07 月 06 日 05:51
+-- 生成日期: 2016 年 07 月 16 日 09:02
 -- 服务器版本: 5.5.20
 -- PHP 版本: 5.3.10
 
@@ -57,28 +57,6 @@ INSERT INTO `car_avaliable_area` (`area_id`, `area_name`) VALUES
 -- --------------------------------------------------------
 
 --
--- 表的结构 `car_license_prefix`
---
-
-CREATE TABLE IF NOT EXISTS `car_license_prefix` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sytle_id` int(100) NOT NULL,
-  `license_prefix` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
-
---
--- 转存表中的数据 `car_license_prefix`
---
-
-INSERT INTO `car_license_prefix` (`id`, `sytle_id`, `license_prefix`) VALUES
-(1, 1, '京'),
-(2, 1, '津'),
-(3, 1, '冀');
-
--- --------------------------------------------------------
-
---
 -- 表的结构 `car_move_info`
 --
 
@@ -89,10 +67,9 @@ CREATE TABLE IF NOT EXISTS `car_move_info` (
   `car_address` varchar(100) NOT NULL,
   `message` varchar(100) NOT NULL,
   `car_owner_phone` varchar(11) DEFAULT NULL,
-  `sms_code` varchar(6) DEFAULT NULL,
   `time` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
 
 -- --------------------------------------------------------
 
@@ -137,8 +114,8 @@ CREATE TABLE IF NOT EXISTS `car_plate_style` (
 --
 
 INSERT INTO `car_plate_style` (`style_id`, `style_name`, `sample_address`) VALUES
-(1, '蓝色车牌：中型以下载客、载货汽车和专项作业车', '/image/moveCar/bluePlate.jpg'),
-(2, '黄色车牌：大型汽车、挂车和教练车', '/image/moveCar/yellowPlate.jpg');
+(1, '蓝色车牌：中型以下载客、载货汽车和专项作业车', 'image/moveCar/bluePlate.jpg'),
+(2, '黄色车牌：大型汽车、挂车和教练车', 'image/moveCar/yellowPlate.jpg');
 
 -- --------------------------------------------------------
 
@@ -160,6 +137,20 @@ CREATE TABLE IF NOT EXISTS `car_protocol_info` (
 
 INSERT INTO `car_protocol_info` (`id`, `protocol_name`, `title`, `content`) VALUES
 (1, 'move_car_protocol', 'move car protocol title', '挪车服务使用协议... ...');
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `car_sms_code`
+--
+
+CREATE TABLE IF NOT EXISTS `car_sms_code` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `receive_phone` varchar(11) NOT NULL,
+  `sms_code` varchar(10) NOT NULL,
+  `time` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 -- --------------------------------------------------------
 
@@ -223,7 +214,7 @@ CREATE TABLE IF NOT EXISTS `yiisession` (
 --
 
 INSERT INTO `yiisession` (`id`, `expire`, `data`) VALUES
-('k3plqsnp648lm6rf3ihhq4dnl2', 1467784867, '');
+('iee4mh8u5j08t0690tdutnvpp1', 1468414516, '');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
