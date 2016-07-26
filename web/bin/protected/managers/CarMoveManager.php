@@ -21,7 +21,7 @@ class CarMoveManager {
     public static function getAllRecordByPlateStyleIdAndNum($type, $plate_num){
         $criteria = new CDbCriteria();
         $criteria->select = 'style_id';
-        $criteria->condition = "style_name = '".$type."'";
+        $criteria->condition = "style_name like '".$type."%'";
 
         $record = CarPlateStyle::model()->find($criteria);
         if ($record == null){
@@ -88,7 +88,7 @@ class CarMoveManager {
     public static function deleteCarMoveInfoRecord($type, $licencePlate, $address){
         $criteria = new CDbCriteria();
         $criteria->select = 'style_id';
-        $criteria->condition = "style_name = '".$type."'";
+        $criteria->condition = "style_name like '".$type."%'";
 
         $record = CarPlateStyle::model()->find($criteria);
         if ($record == null){
@@ -96,17 +96,22 @@ class CarMoveManager {
         } else{
             $style_id = $record->style_id;
         }
-        
+
         $criteria = new CDbCriteria();
         $criteria->condition = "plate_num='".$licencePlate."' and style_id=".$style_id." and car_address='".$address."'";
         $record = CarMoveInfo::model()->find($criteria);
+
         try{
-            $ret = $record->delete();
+            if($record != null){
+                $ret = $record->delete();
+            } else {
+                $ret = -1;
+            }
         } catch (Exception $ex){
-            $ret = 1;
+            $ret = -1;
         }
 
-        return $ret;;
+        return $ret;
     }
 
     public static function deleteCarSmsCode($record){

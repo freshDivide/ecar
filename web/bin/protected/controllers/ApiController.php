@@ -77,7 +77,6 @@ class ApiController extends Controller {
         $car_move_info->message = $message;
         $cur_time = date('Y-m-d H:i:s',time());
         $car_move_info->time = date("Y-m-d H:i:s", strtotime($cur_time)); 
-        
         if ($result != null){
             $car_move_info->style_id = $result->plate_style_id;
             $car_move_info->car_owner_phone= $result->mobile_phone;
@@ -106,7 +105,6 @@ class ApiController extends Controller {
         }
     
         echo $callback."(".CJSON::encode($car_owner_info).");";
-        
     }
 
     public function actionGetAvaliableArea() {
@@ -377,13 +375,20 @@ class ApiController extends Controller {
         $licencePlate = $_REQUEST['licencePlate'];
         $address = $_REQUEST['address'];
 
-        $record = CarMoveManager::deleteCarMoveInfoRecord($type, $licencePlate, $address);
-
-        $ret_json = array(
-                'status' => 0,
-                'message' => '取消挪车请求成功!',
-                'data' => array()
-        );
+        $ret = CarMoveManager::deleteCarMoveInfoRecord($type, $licencePlate, $address);
+        if($ret == 1){
+            $ret_json = array(
+                    'status' => 0,
+                    'message' => '取消挪车请求成功!',
+                    'data' => array()
+            );
+        } else {
+            $ret_json = array(
+                    'status' => 1,
+                    'message' => '取消挪车请求失败，挪车记录不存在！',
+                    'data' => array()
+            );
+        }
 
         echo $callback."(".CJSON::encode($ret_json).");";
     }
