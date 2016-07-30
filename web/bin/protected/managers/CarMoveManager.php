@@ -99,6 +99,7 @@ class CarMoveManager {
 
         $criteria = new CDbCriteria();
         $criteria->condition = "plate_num='".$licencePlate."' and style_id=".$style_id." and car_address='".$address."'";
+        $criteria->order = "time DESC";
         $record = CarMoveInfo::model()->find($criteria);
 
         try{

@@ -71,7 +71,7 @@ class ApiController extends Controller {
         $message = $_REQUEST['message'];
 
         $result = CarMoveManager::getAllRecordByPlateStyleIdAndNum($type, $licencePlate);
-        $car_move_info = new CarMoveinfo;
+        $car_move_info = new CarMoveInfo;
         $car_move_info->plate_num = $licencePlate;
         $car_move_info->car_address = $address;
         $car_move_info->message = $message;
@@ -230,16 +230,40 @@ class ApiController extends Controller {
             $tips = ToolManager::post($gaode_input_tips_api, $post_data);
             $results = json_decode($tips, true);
             $status = $results['status'];
+            $count = $results['count'];
         } catch (Exception $e) {
             $status = '0';
+            $count = '0';
         }
 
-        if($status == '1'){
+        if($status == '1' && $count != '0'){
             $data_array = array();
             foreach ($results['tips'] as $result) {
-                $tip_data['address'] = $result['name'];
-                $tip_data['local'] = $result['district'].$result['address'];
-                $data_array[] = $tip_data;
+                if(is_string($result['id'])){
+                    if (is_string($result['name'])) {
+                        $name = $result['name'];
+                    } else {
+                        $name = '';
+                    }
+
+                    if (is_string($result['district'])) {
+                        $district = $result['district'];
+                    } else {
+                        $district = '';
+                    }
+
+                    if (is_string($result['address'])) {
+                        $address = $result['address'];
+                    } else {
+                        $address = '';
+                    }
+
+                    $tip_data['address'] = $name;
+                    $tip_data['local'] = $district.$address;
+                    $data_array[] = $tip_data;
+                } else {
+                    continue; 
+                }
             }
             $ret_json = array(
                     'status' => 0,
@@ -249,7 +273,7 @@ class ApiController extends Controller {
         } else {
             $ret_json = array(
                     'status' => 1,
-                    'message' => '输入提示获取失败!',
+                    'message' => '输入提示获取失败,请更换关键词!',
                     'data' => array()
             );
         }
@@ -265,7 +289,7 @@ class ApiController extends Controller {
         $lon = $_REQUEST['lon'];
         $gaode_regeo_api = 'http://restapi.amap.com/v3/geocode/regeo';
         $api_key = '3c11184af876b8ed0c159423e7db3bac';
-        $radius = 500;
+        $radius = 1000;
         $extensions = 'all';
         $batch = false;
         $roadlevel = 1;
@@ -278,6 +302,7 @@ class ApiController extends Controller {
                 'batch' => $batch,
                 'roadlevel' => $roadlevel,
             );
+
         try {
             $results = ToolManager::post($gaode_regeo_api, $post_data);
             $res_array = json_decode($results, true);
@@ -288,21 +313,30 @@ class ApiController extends Controller {
 
         if($status == '1'){
             $data_array = array();
-            foreach ($res_array['regeocode']['pois'] as $poi) {
-                $local_prefix = $res_array['regeocode']['addressComponent']['province'].$res_array['regeocode']['addressComponent']['district'];
-                $tip_data['address'] = $poi['name'];
-                $tip_data['local'] = $local_prefix.$poi['address'];
-                $data_array[] = $tip_data;
+            if (is_string($res_array['regeocode']['formatted_address']) && count($res_array['regeocode']['pois']) != 0) {
+                foreach ($res_array['regeocode']['pois'] as $poi) {
+                    $local_prefix = $res_array['regeocode']['addressComponent']['province'].$res_array['regeocode']['addressComponent']['district'];
+                    $tip_data['address'] = $poi['name'];
+                    $tip_data['local'] = $local_prefix.$poi['address'];
+                    $data_array[] = $tip_data;
+                }
+
+                $ret_json = array(
+                        'status' => 0,
+                        'message' => '地址获取成功!',
+                        'data' => $data_array
+                );
+            } else {
+                $ret_json = array(
+                        'status' => 1,
+                        'message' => '地址获取失败,请检查输入经纬度!',
+                        'data' => $data_array
+                );
             }
-            $ret_json = array(
-                    'status' => 0,
-                    'message' => '输入提示获取成功!',
-                    'data' => $data_array
-            );
         } else {
             $ret_json = array(
                     'status' => 1,
-                    'message' => '输入提示获取失败!',
+                    'message' => '地址获取失败,请检查输入经纬度!',
                     'data' => array()
             );
         }
