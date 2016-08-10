@@ -1,12 +1,12 @@
 <?php
 /**
- * access CarAvaliableArea model
+ * access ShopInfo model
  *
  * @author freshDivide
  * @date 2016-07-03
 */
 
-class CarAvaliableArea extends RActiveRecord {
+class ShopInfo extends RActiveRecord {
 
     public static function model($className = __CLASS__) {
         return parent::model($className);
@@ -23,14 +23,7 @@ class CarAvaliableArea extends RActiveRecord {
 
     public function tableName()
     {
-        return "car_avaliable_area";
-    }
-
-    public function relations()
-    {
-        return array(
-            'area_city'=>array(self::HAS_MANY, 'CarAvaliableCity', 'city_area_id'),
-        );
+        return "shop_info";
     }
 }
 

@@ -426,4 +426,247 @@ class ApiController extends Controller {
 
         echo $callback."(".CJSON::encode($ret_json).");";
     }
+
+    public function actionShopFilterRequest() {
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+
+        $gaode_get_area_info = 'http://restapi.amap.com/v3/config/district';
+        $api_key = '3c11184af876b8ed0c159423e7db3bac';
+        $post_data = array(
+                'key' => $api_key,
+                'subdistrict' => 3,
+                'extensions' => 'base'
+            );
+
+        try {
+            $tips = ToolManager::post($gaode_get_area_info, $post_data);
+            $results = json_decode($tips, true);
+            $status = $results['status'];
+            $count = $results['count'];
+        } catch (Exception $e) {
+            $status = '0';
+            $count = '0';
+        }
+
+        $ret_array = array(
+                'status' => 0,
+                'message' => "获取过滤条件成功!",
+                'data' => array()
+        );
+        $ret_json = array(
+                'status' => 0,
+                'message' => '获取地区列表成功!',
+                'data' => array()
+        );
+
+        if($status == '1' && $count != '0'){
+            $address_array = array(
+                'num' => 0,
+                'data' => array()
+            );
+
+            foreach ($results['districts'][0]['districts'] as $district) {
+                $province_array = array(
+                        'name' => $district['name'],
+                        'city' => array()
+                );
+                $province = $district['districts'];
+                $province_level_city = array("北京市", "天津市", "上海市", "重庆市");
+                if (empty($province)){
+                    continue;
+                } else if (in_array($district['name'] , $province_level_city)) {
+                    $sub_areas = $province[0]['districts'];
+                } else{
+                    $sub_areas = $province;
+                }
+                foreach ($sub_areas as $sub_area) {
+                    $city_arrary = array(
+                        'name' => $sub_area['name'],
+                    );
+                    $province_array['city'][] = $city_arrary;
+                }
+
+                $address_array['data'][] = array(
+                    'province' => $province_array
+                );
+            }
+            $address_array['num'] = count($address_array['data']);
+        } else {
+            $ret_json = array(
+                    'status' => 1,
+                    'message' => '获取地区列表失败!',
+                    'data' => array()
+            );
+        }
+
+        $type_array = array(
+            'num' => 0,
+        );
+        $type_results = CarWashManager::getWashType();
+        if (!empty($type_results)) {
+           foreach ($type_results as $result) {
+               $type_array[strval($result->service_id)] = $result->service_name;
+           }
+           $type_array['num'] = count($type_results);
+        }
+
+        $range_array = array(
+            'num' => 0,
+        );
+        $range_results = CarWashManager::getWashRange();
+        if (!empty($range_results)) {
+           foreach ($range_results as $result) {
+               $range_array[strval($result->range_id)] = $result->range_name;
+           }
+           $range_array['num'] = count($range_results);
+        }
+
+        if ($ret_json['status'] != 1) {
+            $ret_json['data'][] = array(
+                    'address' => $address_array,
+                    'type' => $type_array,
+                    'range' => $range_array
+            );
+        }
+        echo $callback."(".CJSON::encode($ret_json).");";
+    }
+
+    public function actionShopListRequest() {
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+        /*
+        $userid = $_REQUEST['userid'];
+        $address = $_REQUEST['address'];
+        $type = $_REQUEST['type'];
+        $range = $_REQUEST['range'];
+        $coordinate = $_REQUEST['coordinate'];
+        */
+
+        $userid = "12345"   ;
+        $address = array(
+                "province" => "北京市",
+                "city" => "海淀区",
+            );
+        $type = "标准洗车";
+        $range = "1公里范围内";
+        $coordinate = array(
+                "lat" => "116.306295",
+                "lon" => "40.053034",
+            );
+
+        $ret_json = CarWashManager::getShopList($userid, $address, $type, $range, $coordinate);
+        echo $callback."(".CJSON::encode($ret_json).");";
+    }
+
+    public function actionShopDetail() {
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+        $user_id = $_REQUEST['userid'];
+        $shop_id = $_REQUEST['shopid'];
+
+        $ret_json = CarWashManager::getShopDetail($user_id, $shop_id);
+        echo $callback."(".CJSON::encode($ret_json).");";
+    }
+
+    public function actionCollectShop() {
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+        $user_id = $_REQUEST['userid'];
+        $shop_id = $_REQUEST['shopid'];
+
+        $ret_json = CarWashManager::collectShop($user_id, $shop_id);
+        echo $callback."(".CJSON::encode($ret_json).");";
+    }
+
+    public function actionCancelCollectShop() {
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+        $user_id = $_REQUEST['userid'];
+        $shop_id = $_REQUEST['shopid'];
+
+        $ret_json = CarWashManager::cancelCollectShop($user_id, $shop_id);
+        echo $callback."(".CJSON::encode($ret_json).");";
+    }
+
+    public function actionSubmitOrder() {
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+        /*
+        $user_id = $_REQUEST['userid'];
+        $shop_id = $_REQUEST['shopid'];
+        $washing = $_REQUEST['washing'];
+        $washing_time = $_REQUEST['washing_time'];
+        $message = $_REQUEST['message'];
+        */
+        $user_id = 12345;
+        $shop_id = 1;
+        $washing = array(1);
+        $washing_time = "2016.08.10.09.00";
+        $message = "可能晚到1个小时左右";
+
+        $ret_json = CarWashManager::submitOrder($user_id, $shop_id, $washing, $washing_time, $message);
+        echo $callback."(".CJSON::encode($ret_json).");";
+    }
+
+    public function actionCancelOrder() {
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+        $order_id = $_REQUEST['order_id'];
+       
+        $ret_json = CarWashManager::cancelOrder($order_id);
+        echo $callback."(".CJSON::encode($ret_json).");";
+    }
+
+    public function actionSubscribeSuccess() {
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+        $order_id = $_REQUEST['order_id'];
+
+        $ret_json = CarWashManager::subscribeSuccess($order_id);
+        echo $callback."(".CJSON::encode($ret_json).");";
+    }
+
+    public function actionModifyArriveTime() {
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+        $order_id = $_REQUEST['order_id'];
+        $washing_time = $_REQUEST['washing_time'];
+
+        $ret_json = CarWashManager::modifyArriveTime($order_id, $washing_time);
+        echo $callback."(".CJSON::encode($ret_json).");";
+    }
+
+     public function actionSubmitReply() {
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+        /*
+        $user_id = $_REQUEST['user_id'];
+        $order_id = $_REQUEST['order_id'];
+        $star = $_REQUEST['star'];
+        $conform_description = $_REQUEST['conformDescription'];
+        $anonymity = $_REQUEST['anonymity'];
+        $content = $_REQUEST=['content'];
+        $images = $_REQUEST['images'];
+        */
+        $user_id = 12345;
+        $order_id = 123456789;
+        $star = 5;
+        $conform_description = 4;
+        $anonymity = true;
+        $content = "这个店真心一般,下次不去了。。。。。。。";
+        $images = array("1234","4567");
+
+        $ret_json = CarWashManager::submitReply($user_id, $order_id, $star, $conform_description, $anonymity, $content, $images);
+        echo $callback."(".CJSON::encode($ret_json).");";
+    }
+
+    public function actionGetMyReply() {
+        header('Content-Type: application/javascript');
+        $callback = $_REQUEST['callback'];
+        $user_id = $_REQUEST['user_id'];
+
+        $ret_json = CarWashManager::getMyReply($user_id);
+        echo $callback."(".CJSON::encode($ret_json).");";
+    }
 }
